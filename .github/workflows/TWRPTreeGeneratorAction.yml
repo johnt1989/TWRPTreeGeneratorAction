@@ -36,7 +36,7 @@ jobs:
           touch info.md
           echo "Submission date：$(TZ=America/Los_Angeles date '+%Y-%m-%d %H:%M:%S')" >> info.md
           echo "ROM Download Link：${{ github.event.inputs.rom_url }}" >> info.md
-          if [ -f ~/Firmware_extractor/out/recovery.img ]; then mv ~/Firmware_extractor/out/recovery.img; fi
+          if [ -f ~/Firmware_extractor/out/recovery.img ]; then mv ~/Firmware_extractor/out/recovery.img ~/Firmware_extractor/out/recovery.img; fi
           pip3 install twrpdtgen
           python3 -m twrpdtgen ~/Firmware_extractor/out/recovery.img
           cd ~
@@ -50,4 +50,3 @@ jobs:
             bodyfile: "${{ github.workspace }}/info.md"
             tag: "OUTPUT_${{ env.BUILD_TIME }}_${{ github.run_id }}"
             token: ${{ secrets.GITHUB_TOKEN }}
-
