@@ -4,10 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       rom_url:
-        description: 'ROM 下载直链'
+        description: 'ROM Download Link'
         required: true
-        default: 'https://mirrorbits.lineageos.org/full/tissot/20230425/lineage-19.1-20230425-nightly-tissot-signed.zip'
-
+        default: 'http://romdownload.nubia.com/%E7%BA%A2%E9%AD%945G/V9.50/NX659J-update.zip'
 
 jobs:
   TWRPTreeGeneratorAction:
@@ -23,23 +22,23 @@ jobs:
           sudo apt install aria2 liblzma-dev brotli lz4
           pip3 install backports.lzma pycrypto
           pip install protobuf==3.20
-          BUILD_TIME=$(TZ=Asia/Shanghai date +"%m%d%H%M")
+          BUILD_TIME=$(TZ=America/Los_Angeles date +"%m%d%H%M")
           echo "BUILD_TIME=$BUILD_TIME" >> $GITHUB_ENV
 
       - name: Generate Device Tree
         run: |
           cd ~
-          git clone --recurse-submodules https://github.com/tosasitill/TWRPTreeGeneratorAction.git -b tools Firmware_extractor
+          git clone --recurse-submodules https://github.com/johnt1989/TWRPTreeGeneratorAction -b tools Firmware_extractor
           cd Firmware_extractor
           aria2c -s 10 -x 10 -d . -o firmware.zip "${{ github.event.inputs.rom_url }}"
           ./extractor.sh firmware.zip
           cd ${{ github.workspace }}
           touch info.md
-          echo "提交日期：$(TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M:%S')" >> info.md
-          echo "ROM 下载直链：${{ github.event.inputs.rom_url }}" >> info.md
-          if [ -f ~/Firmware_extractor/out/init_boot.img ]; then mv ~/Firmware_extractor/out/init_boot.img ~/Firmware_extractor/out/boot.img; fi
+          echo "Submission date：$(TZ=America/Los_Angeles date '+%Y-%m-%d %H:%M:%S')" >> info.md
+          echo "ROM Download Link：${{ github.event.inputs.rom_url }}" >> info.md
+          if [ -f ~/Firmware_extractor/out/recovery.img ]; then mv ~/Firmware_extractor/out/recovery.img; fi
           pip3 install twrpdtgen
-          python3 -m twrpdtgen ~/Firmware_extractor/out/boot.img
+          python3 -m twrpdtgen ~/Firmware_extractor/out/recovery.img
           cd ~
           7z a ~/GeneratedTWRPDeviceTree.zip /home/runner/work/TWRPTreeGeneratorAction/TWRPTreeGeneratorAction/output
 
